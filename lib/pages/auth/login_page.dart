@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:teamchat/pages/auth/register_page.dart';
 import 'package:teamchat/widgets/widgets.dart';
 
@@ -40,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 10,
               ),
               const Text(
-                "Login now to see what they are talking",
+                "Login to see your organization Conversation",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               ),
               Image.asset("assets/login.png"),
