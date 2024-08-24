@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         ],
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.amber,
         title: const Text(
           'Groups',
           style: TextStyle(
