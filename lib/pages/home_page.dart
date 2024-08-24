@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:teamchat/helper/helper_function.dart';
 import 'package:teamchat/pages/auth/login_page.dart';
-import 'package:teamchat/pages/auth/profile_page.dart';
+import 'package:teamchat/pages/profile_page.dart';
 import 'package:teamchat/pages/search_page.dart';
 import 'package:teamchat/service/auth_service.dart';
+import 'package:teamchat/service/database_service.dart';
 import 'package:teamchat/widgets/widgets.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +21,11 @@ class _HomePageState extends State<HomePage> {
 
   String userName = "";
   String email = "";
+
+  bool _isLoading = false;
+  String groupName = "";
+
+  Stream? groups;
 
   @override
   void initState() {
@@ -35,6 +43,14 @@ class _HomePageState extends State<HomePage> {
     await HelperFunction.getUserNameFromSF().then((value) {
       setState(() {
         userName = value!;
+      });
+    });
+
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserGroup()
+        .then((snapshot) {
+      setState(() {
+        groups = snapshot;
       });
     });
   }
@@ -102,7 +118,12 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               onTap: () {
-                nextScreen(context, ProfilePage());
+                nextScreen(
+                    context,
+                    ProfilePage(
+                      userName: userName,
+                      email: email,
+                    ));
               },
               selectedColor: Colors.amber,
               selected: false,
@@ -161,6 +182,145 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+      body: groupList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          popUpDialog(context);
+        },
+        elevation: 0,
+        backgroundColor: Colors.amber,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+    );
+  }
+
+  popUpDialog(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              "Create a group",
+              textAlign: TextAlign.left,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _isLoading == true
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.amber,
+                        ),
+                      )
+                    : TextField(
+                        onChanged: (val) {
+                          setState(() {
+                            groupName = val;
+                          });
+                        },
+                        style: const TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.amber),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      )
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(foregroundColor: Colors.amber),
+                child: const Text("CANCEL"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (groupName != "") {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                        .createGroup(userName,
+                            FirebaseAuth.instance.currentUser!.uid, groupName)
+                        .whenComplete(() {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      Navigator.of(context).pop();
+                      showSnackBar(
+                          context, Colors.amber, "Group Sucessfully Created");
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.white),
+                child: const Text("CREATE"),
+              ),
+            ],
+          );
+        });
+  }
+
+  groupList() {
+    return StreamBuilder(
+      stream: groups,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data['groups'] != null) {
+            if (snapshot.data['groups'].length != 0) {
+              return Text("Hello");
+            } else {
+              return noGroupWidget();
+            }
+          } else {
+            return noGroupWidget();
+          }
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.amber,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  noGroupWidget() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              popUpDialog(context);
+            },
+            child: Icon(
+              Icons.add_circle,
+              color: Colors.grey[700],
+              size: 75,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            "You've not joined any group yet, Ask your organization admin to add you in a group or create your own group.",
+            textAlign: TextAlign.center,
+          )
+        ],
       ),
     );
   }
