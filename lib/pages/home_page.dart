@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:teamchat/helper/helper_function.dart';
 import 'package:teamchat/pages/auth/login_page.dart';
@@ -80,7 +79,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: Drawer(
         child: ListView(
-          padding: EdgeInsets.symmetric(vertical: 50),
+          padding: const EdgeInsets.symmetric(vertical: 50),
           children: <Widget>[
             Icon(
               Icons.account_circle,
@@ -141,8 +140,8 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text("Logout"),
-                        content: Text("Are you sure you want to logout?"),
+                        title: const Text("Logout"),
+                        content: const Text("Are you sure you want to logout?"),
                         actions: [
                           IconButton(
                             onPressed: () {
@@ -278,7 +277,7 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           if (snapshot.data['groups'] != null) {
             if (snapshot.data['groups'].length != 0) {
-              return Text("Hello");
+              return const Text("Hello");
             } else {
               return noGroupWidget();
             }
