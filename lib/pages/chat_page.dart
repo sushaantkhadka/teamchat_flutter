@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:teamchat/pages/group_info.dart';
 import 'package:teamchat/service/database_service.dart';
+import 'package:teamchat/widgets/message_tile.dart';
 import 'package:teamchat/widgets/widgets.dart';
 
 class ChatPage extends StatefulWidget {
@@ -21,6 +22,8 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
 
+  TextEditingController messageController = TextEditingController();
+
   String admin = "";
 
   @override
@@ -31,7 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   getChatandAdmin() {
-    DatabaseService().getChat(widget.groupId).then((val) {
+    DatabaseService().getChats(widget.groupId).then((val) {
       setState(() {
         chats = val;
       });
@@ -79,13 +82,43 @@ class _ChatPageState extends State<ChatPage> {
               alignment: Alignment.bottomCenter,
               width: MediaQuery.of(context).size.width,
               child: Container(
-                padding: EdgeInsets.all(20),
-                color: Colors.grey[700],
+                padding: const EdgeInsets.all(20),
+                color: Colors.amber[100],
                 child: Row(
                   children: [
-                    Expanded(child: TextFormField(
-                      controller: ,
-                    ))
+                    Expanded(
+                      child: TextFormField(
+                        controller: messageController,
+                        style: const TextStyle(color: Colors.grey),
+                        decoration: const InputDecoration(
+                          hintText: "Send Messages....",
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 16),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        sendMessage();
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Center(
+                          child: Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -97,6 +130,36 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   chatMessages() {
+    return StreamBuilder(
+        stream: chats,
+        builder: (context, AsyncSnapshot snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return MessageTile(
+                        message: snapshot.data.docs[index]['message'],
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender']);
+                  },
+                )
+              : Container();
+        });
+  }
 
+  sendMessage() {
+    if (messageController.text.isNotEmpty) {
+      Map<String, dynamic> chatMessageMap = {
+        "message": messageController.text,
+        "sender": widget.userName,
+        "time": DateTime.now().millisecondsSinceEpoch,
+      };
+
+      DatabaseService().sendMessage(widget.groupId, chatMessageMap);
+      setState(() {
+        messageController.clear();
+      });
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:teamchat/helper/helper_function.dart';
 import 'package:teamchat/pages/home_page.dart';
 import 'package:teamchat/service/database_service.dart';
 
@@ -21,6 +22,9 @@ class GroupInfo extends StatefulWidget {
 class _GroupInfoState extends State<GroupInfo> {
   Stream? members;
 
+  String userName = "";
+  User? user;
+
   String getName(String res) {
     return res.substring(res.indexOf("_") + 1);
   }
@@ -31,6 +35,8 @@ class _GroupInfoState extends State<GroupInfo> {
     super.initState();
   }
 
+  getCurrentUserIdandName() async {}
+
   getMembers() async {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getGroupMembers(widget.groupId)
@@ -38,6 +44,13 @@ class _GroupInfoState extends State<GroupInfo> {
       setState(() {
         members = val;
       });
+    });
+
+    await HelperFunction.getUserNameFromSF().then((value) {
+      setState(() {
+        userName = value!;
+      });
+      user = FirebaseAuth.instance.currentUser;
     });
   }
 
@@ -70,9 +83,7 @@ class _GroupInfoState extends State<GroupInfo> {
                               await DatabaseService(
                                       uid: FirebaseAuth
                                           .instance.currentUser!.uid)
-                                  .toggleGroupJoin(
-                                      widget.groupId,
-                                      getName(widget.adminName),
+                                  .toggleGroupJoin(widget.groupId, userName,
                                       widget.groupName);
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(

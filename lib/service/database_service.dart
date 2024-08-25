@@ -53,7 +53,7 @@ class DatabaseService {
     });
   }
 
-  getChat(String groupId) async {
+  getChats(String groupId) async {
     return groupCollection
         .doc(groupId)
         .collection("messages")
@@ -114,5 +114,14 @@ class DatabaseService {
         'members': FieldValue.arrayUnion(['${uid}_$userName'])
       });
     }
+  }
+
+  sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
+    groupCollection.doc(groupId).collection("messages").add(chatMessageData);
+    groupCollection.doc(groupId).update({
+      "recentMessage": chatMessageData['message'],
+      "recentMessageSender": chatMessageData['sender'],
+      "recentMessageTime": chatMessageData['time'].toString(),
+    });
   }
 }
