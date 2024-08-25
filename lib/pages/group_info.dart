@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:teamchat/pages/home_page.dart';
 import 'package:teamchat/service/database_service.dart';
 
 class GroupInfo extends StatefulWidget {
@@ -45,7 +46,49 @@ class _GroupInfoState extends State<GroupInfo> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.logout_outlined))
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Leave Group"),
+                        content: const Text(
+                            "Are you sure you want to leave the group?"),
+                        actions: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.cancel,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              await DatabaseService(
+                                      uid: FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                  .toggleGroupJoin(
+                                      widget.groupId,
+                                      getName(widget.adminName),
+                                      widget.groupName);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const HomePage()),
+                                  (route) => false);
+                            },
+                            icon: const Icon(
+                              Icons.exit_to_app,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+              },
+              icon: Icon(Icons.logout_outlined))
         ],
         elevation: 0,
         centerTitle: true,

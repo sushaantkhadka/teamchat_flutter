@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:637872687540:android:e00f721d67bcca6ca10ae1",
+        "android_client_info": {
+          "package_name": "com.example.teamch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhaGmeOh52c5_OqVtADGZzlceCwD9E0kY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:637872687540:android:1743e39128f1d128a10ae1",
         "android_client_info": {
           "package_name": "com.example.teamchat"

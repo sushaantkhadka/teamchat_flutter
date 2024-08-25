@@ -71,9 +71,32 @@ class _ChatPageState extends State<ChatPage> {
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: const Center(
-        child: Text("This is a chatpage"),
+      body: Center(
+        child: Stack(
+          children: <Widget>[
+            chatMessages(),
+            Container(
+              alignment: Alignment.bottomCenter,
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                color: Colors.grey[700],
+                child: Row(
+                  children: [
+                    Expanded(child: TextFormField(
+                      controller: ,
+                    ))
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  chatMessages() {
+
   }
 }

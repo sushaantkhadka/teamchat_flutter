@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'teamchat-2038f.appspot.com',
     measurementId: 'G-4E0BNZXVH1',
   );
+
 }
