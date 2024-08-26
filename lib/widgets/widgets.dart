@@ -25,18 +25,24 @@ void nextScreenReplace(context, page) {
 
 void showSnackBar(context, color, message) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    action: SnackBarAction(
+      label: "Ok",
+      onPressed: () {},
+      textColor: Colors.white,
+    ),
     content: Text(
       message,
       style: const TextStyle(
         fontSize: 14,
       ),
     ),
-    backgroundColor: color,
     duration: const Duration(seconds: 2),
-    action: SnackBarAction(
-      label: "Ok",
-      onPressed: () {},
-      textColor: Colors.white,
+    width: 280.0,
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
     ),
+    backgroundColor: color,
   ));
 }
