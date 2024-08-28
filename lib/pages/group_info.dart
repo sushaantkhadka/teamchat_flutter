@@ -35,8 +35,6 @@ class _GroupInfoState extends State<GroupInfo> {
     super.initState();
   }
 
-  getCurrentUserIdandName() async {}
-
   getMembers() async {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getGroupMembers(widget.groupId)
